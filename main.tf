@@ -1,0 +1,41 @@
+provider "aws" {
+  region = "ap-south-1"
+}
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.19.0"
+
+  name = "example-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets  = ["10.0.101.0/24"]
+
+  enable_dns_hostnames    = true
+}
+
+data "aws_ami" "windows" {
+  most_recent = true
+
+  filter {
+    name = "name"
+    values = ["Windows_Server-2019-English-Full-Base-*"]
+    
+  }
+
+  owners = ["801119661308"]
+}
+
+resource "aws_instance" "app_server" {
+  ami           = data.aws_ami.windows.id
+  instance_type = "t3.micro"
+
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.private_subnets[0]
+
+  tags = {
+    Name = "learn-terraform"
+  }
+}
