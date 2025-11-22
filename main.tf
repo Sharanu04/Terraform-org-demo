@@ -30,7 +30,7 @@ data "aws_ami" "windows" {
 
 resource "aws_instance" "app_server" {
   ami           = data.aws_ami.windows.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 
   vpc_security_group_ids = [module.vpc.default_security_group_id]
   subnet_id              = module.vpc.private_subnets[0]
