@@ -13,16 +13,16 @@ module "vpc" {
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
   public_subnets  = ["10.0.101.0/24"]
 
-  enable_dns_hostnames    = true
+  enable_dns_hostnames = true
 }
 
 data "aws_ami" "windows" {
   most_recent = true
 
   filter {
-    name = "name"
+    name   = "name"
     values = ["Windows_Server-2019-English-Full-Base-*"]
-    
+
   }
 
   owners = ["801119661308"]
@@ -30,7 +30,7 @@ data "aws_ami" "windows" {
 
 resource "aws_instance" "app_server" {
   ami           = data.aws_ami.windows.id
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
 
   vpc_security_group_ids = [module.vpc.default_security_group_id]
   subnet_id              = module.vpc.private_subnets[0]
